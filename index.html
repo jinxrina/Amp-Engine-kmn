@@ -1,0 +1,3595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amp-Engine Electrical Breaker Size Calculator</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        /*
+        ===============================================
+        TABLE OF CONTENTS
+        ===============================================
+        1. CSS Variables & Root Styles
+        2. Base Styles & Typography
+        3. Dark Mode Styles
+        4. Layout & Grid System
+        5. Header & Navigation
+        6. Hero Section
+        7. Calculator Section
+        8. Form Styles
+        9. Button Styles
+        10. Results Section
+        11. Report Section
+        12. Footer
+        13. Animations & Keyframes
+        14. Background Effects
+        15. Responsive Design
+        16. Touch-friendly Styles
+        17. Utility Classes
+        18. Sound Control Styles
+        19. Modal Styles
+        20. PDF Export Styles
+        ===============================================
+        */
+
+        /* 1. CSS Variables & Root Styles */
+        :root {
+            --primary-color: #00d4ff;
+            --secondary-color: #ff6b35;
+            --accent-color: #8e44ad;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --dark-bg: #0a0a0a;
+            --dark-surface: #1a1a1a;
+            --dark-card: #2d2d2d;
+            --light-bg: #ffffff;
+            --light-surface: #f8f9fa;
+            --light-card: #ffffff;
+            --text-light: #ffffff;
+            --text-dark: #333333;
+            --shadow-light: 0 4px 20px rgba(0, 0, 0, 0.1);
+            --shadow-dark: 0 4px 20px rgba(0, 0, 0, 0.3);
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-accent: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+            --animation-speed: 0.6s;
+        }
+
+        /* 2. Base Styles & Typography */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: var(--light-bg);
+            overflow-x: hidden;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+            z-index: -1;
+            animation: backgroundFloat 20s ease-in-out infinite;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+        }
+
+        h3 {
+            font-size: clamp(1.25rem, 3vw, 2rem);
+        }
+
+        p {
+            margin-bottom: 1rem;
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+        }
+
+        /* 3. Dark Mode Styles */
+        body.dark-mode {
+            background: var(--dark-bg);
+            color: var(--text-light);
+        }
+
+        body.dark-mode::before {
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.15) 0%, transparent 50%);
+        }
+
+        .dark-mode .card {
+            background: var(--dark-card);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+        }
+
+        .dark-mode .form-group input,
+        .dark-mode .form-group select {
+            background: var(--dark-surface);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+        }
+
+        .dark-mode .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .dark-mode .form-group label {
+            color: #00d4ff;
+        }
+
+        .dark-mode .navbar {
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(20px);
+            color: #ffffff;
+        }
+
+        .dark-mode .result-item {
+            background: rgba(0, 212, 255, 0.15);
+            color: #ffffff;
+        }
+
+        .dark-mode .result-label {
+            color: #00d4ff;
+        }
+
+        .dark-mode .result-value {
+            color: #ffffff;
+        }
+
+        .dark-mode .report-container {
+            background: var(--dark-card);
+            color: #ffffff;
+        }
+
+        .dark-mode .report-table th {
+            background: rgba(0, 212, 255, 0.2);
+            color: #ffffff;
+        }
+
+        .dark-mode .report-table td {
+            color: #ffffff;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .dark-mode .section-title {
+            color: #ffffff;
+        }
+
+        .dark-mode h1, .dark-mode h2, .dark-mode h3, .dark-mode h4, .dark-mode h5, .dark-mode h6 {
+            color: #ffffff;
+        }
+
+        .dark-mode .standards-info {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(142, 68, 173, 0.2));
+            color: #ffffff;
+        }
+
+        .dark-mode .warning-message {
+            background: rgba(243, 156, 18, 0.2);
+            border-left: 4px solid var(--warning-color);
+            color: #f39c12;
+        }
+
+        .dark-mode .error-message {
+            background: rgba(231, 76, 60, 0.2);
+            border-left: 4px solid var(--danger-color);
+            color: #e74c3c;
+        }
+
+        .dark-mode .export-container {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            color: #ffffff;
+        }
+
+        .dark-mode .circuit-diagram {
+            background: var(--dark-surface);
+            border: 2px dashed rgba(0, 212, 255, 0.5);
+            color: #ffffff;
+        }
+
+        .dark-mode .progress-container {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .dark-mode .tooltip::after {
+            background: #1a1a1a;
+            color: #ffffff;
+        }
+
+        .dark-mode .nav-link {
+            color: #ffffff;
+        }
+
+        .dark-mode .nav-brand {
+            color: #ffffff;
+        }
+
+        .dark-mode p {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* 4. Layout & Grid System */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .container-fluid {
+            max-width: 100%;
+            padding: 0 20px;
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -15px;
+        }
+
+        .col {
+            flex: 1;
+            padding: 0 15px;
+        }
+
+        .col-6 {
+            flex: 0 0 50%;
+            max-width: 50%;
+            padding: 0 15px;
+        }
+
+        .col-4 {
+            flex: 0 0 33.333333%;
+            max-width: 33.333333%;
+            padding: 0 15px;
+        }
+
+        .col-3 {
+            flex: 0 0 25%;
+            max-width: 25%;
+            padding: 0 15px;
+        }
+
+        .card {
+            background: var(--light-card);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-light);
+            transition: var(--transition);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--gradient-primary);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 5. Header & Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            padding: 1rem 0;
+            transition: var(--transition);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar.scrolled {
+            padding: 0.5rem 0;
+            box-shadow: var(--shadow-light);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: inherit;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--primary-color);
+            transition: var(--transition);
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover::before {
+            width: 80%;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .theme-toggle, .sound-toggle {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: var(--transition);
+            color: inherit;
+        }
+
+        .theme-toggle:hover, .sound-toggle:hover {
+            background: rgba(0, 212, 255, 0.1);
+            transform: scale(1.1);
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: inherit;
+        }
+
+        /* 6. Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            z-index: 2;
+            animation: fadeInUp var(--animation-speed) ease-out;
+        }
+
+        .hero-title {
+            margin-bottom: 1.5rem;
+            animation: slideInDown var(--animation-speed) ease-out 0.2s both;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1rem, 2.5vw, 1.5rem);
+            margin-bottom: 2rem;
+            opacity: 0.8;
+            animation: fadeIn var(--animation-speed) ease-out 0.4s both;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: var(--gradient-primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            position: relative;
+            overflow: hidden;
+            animation: bounceIn var(--animation-speed) ease-out 0.6s both;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 212, 255, 0.3);
+        }
+
+        /* 7. Calculator Section */
+        .calculator-section {
+            padding: 5rem 0;
+            position: relative;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            width: 100px;
+            height: 3px;
+            background: var(--gradient-primary);
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        /* 8. Form Styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--accent-color);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            background: var(--light-surface);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+            transform: scale(1.02);
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-color);
+            pointer-events: none;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        /* 9. Button Styles */
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            min-width: 120px;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--gradient-secondary);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+
+        /* 10. Results Section */
+        .results-container {
+            margin-top: 2rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: var(--transition);
+        }
+
+        .results-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            background: rgba(0, 212, 255, 0.05);
+            border-left: 4px solid var(--primary-color);
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+            transition: var(--transition);
+        }
+
+        .result-item:hover {
+            background: rgba(0, 212, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+
+        .result-value {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+        }
+
+        .warning-message {
+            background: rgba(243, 156, 18, 0.1);
+            border-left: 4px solid var(--warning-color);
+            padding: 1rem;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+            margin: 1rem 0;
+            color: var(--warning-color);
+            font-weight: 600;
+        }
+
+        .error-message {
+            background: rgba(231, 76, 60, 0.1);
+            border-left: 4px solid var(--danger-color);
+            padding: 1rem;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+            margin: 1rem 0;
+            color: var(--danger-color);
+            font-weight: 600;
+        }
+
+        /* 11. Report Section */
+        .report-container {
+            background: var(--light-card);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-top: 2rem;
+            box-shadow: var(--shadow-light);
+            position: relative;
+        }
+
+        .report-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .report-header h3 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .report-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .report-meta div {
+            background: rgba(0, 212, 255, 0.05);
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
+        }
+
+        .report-section {
+            margin-bottom: 2rem;
+        }
+
+        .report-section h4 {
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .report-table th,
+        .report-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .report-table th {
+            background: var(--gradient-primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        .report-table tr:hover {
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        /* 12. Footer */
+        .footer {
+            background: var(--dark-surface);
+            color: var(--text-light);
+            padding: 3rem 0 1rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .footer-content {
+            margin-bottom: 2rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .footer-bottom {
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        /* 13. Animations & Keyframes */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes backgroundFloat {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+            33% {
+                transform: translateY(-20px) rotate(0.5deg);
+            }
+            66% {
+                transform: translateY(10px) rotate(-0.5deg);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            25% {
+                transform: translateX(-5px);
+            }
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        .animate-pulse {
+            animation: pulse 2s infinite;
+        }
+
+        .animate-shake {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        /* 14. Background Effects */
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 20s infinite linear;
+        }
+
+        .shape:nth-child(1) {
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+            animation-duration: 25s;
+        }
+
+        .shape:nth-child(2) {
+            top: 60%;
+            right: 10%;
+            animation-delay: 5s;
+            animation-duration: 30s;
+        }
+
+        .shape:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 10s;
+            animation-duration: 35s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-100px) rotate(180deg);
+            }
+            100% {
+                transform: translateY(0px) rotate(360deg);
+            }
+        }
+
+        /* 15. Responsive Design */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: inherit;
+                flex-direction: column;
+                padding: 1rem;
+                box-shadow: var(--shadow-light);
+                border-radius: 0 0 var(--border-radius) var(--border-radius);
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .col-6, .col-4, .col-3 {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+
+            .form-row {
+                flex-direction: column;
+            }
+
+            .btn-group {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .hero {
+                min-height: 80vh;
+                padding: 2rem 0;
+            }
+
+            .calculator-section {
+                padding: 3rem 0;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .report-meta {
+                flex-direction: column;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 15px;
+            }
+
+            .card {
+                padding: 1rem;
+            }
+
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .cta-button {
+                padding: 0.75rem 1.5rem;
+                font-size: 1rem;
+            }
+
+            .report-table {
+                font-size: 0.8rem;
+            }
+
+            .report-table th,
+            .report-table td {
+                padding: 0.5rem;
+            }
+        }
+
+        /* 16. Touch-friendly Styles */
+        @media (pointer: coarse) {
+            .btn, .nav-link, .theme-toggle, .sound-toggle {
+                min-height: 44px;
+                min-width: 44px;
+            }
+
+            .form-group input,
+            .form-group select {
+                min-height: 44px;
+            }
+
+            .mobile-menu-toggle {
+                min-height: 44px;
+                min-width: 44px;
+            }
+        }
+
+        /* 17. Utility Classes */
+        .text-center {
+            text-align: center;
+        }
+
+        .text-left {
+            text-align: left;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .mt-1 { margin-top: 0.5rem; }
+        .mt-2 { margin-top: 1rem; }
+        .mt-3 { margin-top: 1.5rem; }
+        .mt-4 { margin-top: 2rem; }
+
+        .mb-1 { margin-bottom: 0.5rem; }
+        .mb-2 { margin-bottom: 1rem; }
+        .mb-3 { margin-bottom: 1.5rem; }
+        .mb-4 { margin-bottom: 2rem; }
+
+        .p-1 { padding: 0.5rem; }
+        .p-2 { padding: 1rem; }
+        .p-3 { padding: 1.5rem; }
+        .p-4 { padding: 2rem; }
+
+        .hidden {
+            display: none;
+        }
+
+        .visible {
+            display: block;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .slide-up {
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        /* 18. Sound Control Styles */
+        .sound-indicator {
+            position: fixed;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            background: rgba(0, 212, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 50px;
+            padding: 0.5rem;
+            z-index: 1001;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .sound-indicator.show {
+            opacity: 1;
+        }
+
+        /* 19. Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--light-card);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            transform: scale(0.8);
+            transition: var(--transition);
+        }
+
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--danger-color);
+            padding: 0.25rem;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        /* 20. PDF Export Styles */
+        .export-container {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(0, 212, 255, 0.05);
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .export-options {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 0.5rem;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Standards Information Styles */
+        .standards-info {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(142, 68, 173, 0.1));
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .standards-info h4 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .standards-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .standards-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+        }
+
+        .standards-list li:last-child {
+            border-bottom: none;
+        }
+
+        .standards-list li::before {
+            content: '✓';
+            color: var(--success-color);
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        /* Progress Bar Styles */
+        .progress-container {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 3px;
+            margin: 1rem 0;
+        }
+
+        .progress-bar {
+            background: var(--gradient-primary);
+            height: 20px;
+            border-radius: 8px;
+            width: 0%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Tooltip Styles */
+        .tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--dark-surface);
+            color: white;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            z-index: 1000;
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Notification Styles */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--success-color);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-dark);
+            z-index: 2001;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            max-width: 350px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: var(--danger-color);
+        }
+
+        .notification.warning {
+            background: var(--warning-color);
+        }
+
+        /* Circuit Diagram Styles */
+        .circuit-diagram {
+            background: var(--light-surface);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: center;
+            border: 2px dashed rgba(0, 212, 255, 0.3);
+        }
+
+        .circuit-symbol {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin: 1rem;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+
+        /* Additional Modern Effects */
+        .glassmorphism {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .neon-glow {
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+
+        .gradient-text {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Scroll Progress Indicator */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: var(--gradient-primary);
+            z-index: 1001;
+            transition: width 0.1s ease;
+        }
+
+        /* Parallax Effect */
+        .parallax {
+            transform: translateY(0);
+            transition: transform 0.1s ease-out;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Scroll Progress Indicator -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <!-- Floating Background Shapes -->
+    <div class="floating-shapes">
+        <div class="shape">⚡</div>
+        <div class="shape">🔧</div>
+        <div class="shape">⚙️</div>
+    </div>
+
+    <!-- Sound Indicator -->
+    <div class="sound-indicator" id="soundIndicator">
+        <i class="fas fa-volume-up"></i>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <div class="nav-container">
+                <a href="#" class="nav-brand">
+                    <i class="fas fa-bolt"></i> Amp-Engine 
+                </a>
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="#home" class="nav-link">Home</a></li>
+                    <li><a href="#calculator" class="nav-link">Calculator</a></li>
+                    <li><a href="#standards" class="nav-link">Standards</a></li>
+                    <li><a href="#about" class="nav-link">About</a></li>
+                    <li>
+                        <button class="sound-toggle" id="soundToggle" title="Toggle Sound">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                    </li>
+                    <li>
+                        <button class="theme-toggle" id="themeToggle" title="Toggle Dark Mode">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                    </li>
+                </ul>
+                <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title"> Amp-Engine - Electrical Breaker Size Calculator</h1>
+                <p class="hero-subtitle">
+                    Professional breaker sizing calculations compliant with Singapore Standards (SS 638) 
+                    and IEC regulations for safe electrical installations. <br> Created By Kyaw Myo Naing 
+                </p>
+                <a href="#calculator" class="cta-button">
+                    <i class="fas fa-calculator"></i> Start Calculating
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Standards Information Section -->
+    <section class="standards-info" id="standards">
+        <div class="container">
+            <h4><i class="fas fa-check-circle"></i> Compliance with Singapore Standards</h4>
+            <ul class="standards-list">
+                <li>SS 638: Code of Practice for Electrical Installations</li>
+                <li>IEC 60364: Low-voltage electrical installations</li>
+                <li>IEC 60898: Circuit-breakers for overcurrent protection</li>
+                <li>CP 5: Code of Practice for Electrical Installations</li>
+                <li>Building and Construction Authority (BCA) Requirements</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Calculator Section -->
+    <section class="calculator-section" id="calculator">
+        <div class="container">
+            <h2 class="section-title">Breaker Size Calculator</h2>
+            
+            <div class="row">
+                <div class="col">
+                    <div class="card">
+                        <h3><i class="fas fa-cogs"></i> Load Calculation Parameters</h3>
+                        
+                        <form id="calculatorForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="systemType">System Type</label>
+                                    <select id="systemType" required>
+                                        <option value="">Select System Type</option>
+                                        <option value="single-phase">Single Phase (230V)</option>
+                                        <option value="three-phase">Three Phase (400V)</option>
+                                        <option value="three-phase-high">Three Phase High Voltage (6.6kV)</option>
+                                    </select>
+                                    <i class="fas fa-plug input-icon"></i>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="loadType">Load Type</label>
+                                    <select id="loadType" required>
+                                        <option value="">Select Load Type</option>
+                                        <option value="resistive">Resistive (Heating, Lighting)</option>
+                                        <option value="inductive">Inductive (Motors, Transformers)</option>
+                                        <option value="capacitive">Capacitive (Power Factor Correction)</option>
+                                        <option value="mixed">Mixed Load</option>
+                                    </select>
+                                    <i class="fas fa-lightbulb input-icon"></i>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="power" class="tooltip" data-tooltip="Enter the total power consumption in Watts">
+                                        Power Rating (W)
+                                    </label>
+                                    <input type="number" id="power" placeholder="Enter power in Watts" min="1" required>
+                                    <i class="fas fa-tachometer-alt input-icon"></i>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="voltage">Operating Voltage (V)</label>
+                                    <input type="number" id="voltage" placeholder="Enter voltage" required>
+                                    <i class="fas fa-bolt input-icon"></i>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="powerFactor" class="tooltip" data-tooltip="Power factor (0.7-1.0). Use 1.0 for resistive loads">
+                                        Power Factor
+                                    </label>
+                                    <input type="number" id="powerFactor" step="0.01" min="0.1" max="1" value="0.85" required>
+                                    <i class="fas fa-wave-square input-icon"></i>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="safetyFactor" class="tooltip" data-tooltip="Safety margin factor (typically 1.25 for continuous loads)">
+                                        Safety Factor
+                                    </label>
+                                    <input type="number" id="safetyFactor" step="0.01" min="1" max="2" value="1.25" required>
+                                    <i class="fas fa-shield-alt input-icon"></i>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="cableLength" class="tooltip" data-tooltip="Cable length affects voltage drop calculations">
+                                        Cable Length (m)
+                                    </label>
+                                    <input type="number" id="cableLength" placeholder="Enter cable length" min="1" required>
+                                    <i class="fas fa-ruler input-icon"></i>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="ambientTemp">Ambient Temperature (°C)</label>
+                                    <input type="number" id="ambientTemp" value="30" min="0" max="60" required>
+                                    <i class="fas fa-thermometer-half input-icon"></i>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="installationMethod">Installation Method</label>
+                                    <select id="installationMethod" required>
+                                        <option value="">Select Installation Method</option>
+                                        <option value="surface">Surface Mounting</option>
+                                        <option value="conduit">Conduit/Trunking</option>
+                                        <option value="underground">Underground</option>
+                                        <option value="overhead">Overhead</option>
+                                    </select>
+                                    <i class="fas fa-wrench input-icon"></i>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="diversity">Diversity Factor</label>
+                                    <input type="number" id="diversity" step="0.01" min="0.1" max="1" value="1" required>
+                                    <i class="fas fa-chart-pie input-icon"></i>
+                                </div>
+                            </div>
+
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-calculator"></i> Calculate Breaker Size
+                                </button>
+                                <button type="button" class="btn btn-secondary" id="resetForm">
+                                    <i class="fas fa-redo"></i> Reset Form
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Progress Bar -->
+                        <div class="progress-container hidden" id="progressContainer">
+                            <div class="progress-bar" id="progressBar">Calculating...</div>
+                        </div>
+
+                        <!-- Results Container -->
+                        <div class="results-container" id="resultsContainer">
+                            <!-- Results will be populated here -->
+                        </div>
+
+                        <!-- Export Options -->
+                        <div class="export-container hidden" id="exportContainer">
+                            <h4><i class="fas fa-download"></i> Export Calculation Report</h4>
+                            <p>Download your calculation report in various formats:</p>
+                            <div class="export-options">
+                                <button class="btn btn-success" id="exportPDF">
+                                    <i class="fas fa-file-pdf"></i> Export PDF
+                                </button>
+                                <button class="btn btn-warning" id="exportPNG">
+                                    <i class="fas fa-image"></i> Export PNG
+                                </button>
+                                <button class="btn btn-primary" id="viewReport">
+                                    <i class="fas fa-eye"></i> View Full Report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="calculator-section" id="about">
+        <div class="container">
+            <h2 class="section-title">About This Calculator</h2>
+            <div class="row">
+                <div class="col-4">
+                    <div class="card">
+                        <h3><i class="fas fa-certificate"></i> Standards Compliance</h3>
+                        <p>This calculator strictly follows Singapore Standards SS 638 and international IEC standards for electrical installations, ensuring your designs meet local regulatory requirements.</p>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card">
+                        <h3><i class="fas fa-shield-alt"></i> Safety First</h3>
+                        <p>Built-in safety factors and derating calculations ensure your electrical installations operate safely under all expected conditions with adequate protection margins.</p>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card">
+                        <h3><i class="fas fa-chart-line"></i> Professional Accuracy</h3>
+                        <p>Advanced algorithms consider voltage drop, temperature derating, installation methods, and load diversity factors for precise breaker sizing calculations.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <h3>Electrical Breaker Calculator</h3>
+                <p>Professional electrical design tool for Singapore standards compliance</p>
+            </div>
+            <div class="footer-links">
+                <a href="#"><i class="fas fa-book"></i> Documentation</a>
+                <a href="#"><i class="fas fa-question-circle"></i> Support</a>
+                <a href="#"><i class="fas fa-balance-scale"></i> Legal</a>
+                <a href="#"><i class="fas fa-shield-alt"></i> Privacy</a>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Amp-Engine Electrical Calculator. For professional electrical design use only.</p>
+                <p><strong>Disclaimer:</strong> This tool provides guidance only. Always consult qualified electrical engineers for final designs.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Report Modal -->
+    <div class="modal" id="reportModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Detailed Calculation Report</h3>
+                <button class="modal-close" id="modalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="reportContent">
+                <!-- Report content will be generated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div class="notification" id="notification"></div>
+
+    <script>
+        /*
+        ===============================================
+        JAVASCRIPT TABLE OF CONTENTS
+        ===============================================
+        1. Global Variables & Configuration
+        2. Audio System
+        3. Theme Management
+        4. Navigation & UI Effects
+        5. Scroll Effects & Animations
+        6. Form Handling & Validation
+        7. Calculation Engine
+        8. Results Display & Formatting
+        9. Report Generation
+        10. PDF Export Functionality
+        11. PNG Export Functionality
+        12. Modal Management
+        13. Notification System
+        14. Touch & Mobile Support
+        15. Responsive Utilities
+        16. Performance Optimization
+        17. Error Handling
+        18. Data Storage (Memory-based)
+        19. Utility Functions
+        20. Event Listeners & Initialization
+        ===============================================
+        */
+
+        // 1. Global Variables & Configuration
+        let calculationData = {};
+        let soundEnabled = true;
+        let darkMode = false;
+        let currentCalculation = null;
+
+        // Singapore electrical standards constants
+        const SINGAPORE_STANDARDS = {
+            voltages: {
+                'single-phase': 230,
+                'three-phase': 400,
+                'three-phase-high': 6600
+            },
+            standardBreakerSizes: [6, 10, 16, 20, 25, 32, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315, 400, 500, 630, 800, 1000, 1250, 1600],
+            temperatureDerating: {
+                25: 1.0,
+                30: 0.94,
+                35: 0.87,
+                40: 0.79,
+                45: 0.71,
+                50: 0.61,
+                55: 0.50,
+                60: 0.35
+            },
+            installationFactors: {
+                'surface': 1.0,
+                'conduit': 0.8,
+                'underground': 0.9,
+                'overhead': 1.1
+            },
+            maxVoltageDrop: 0.05 // 5% maximum voltage drop
+        };
+
+        // 2. Audio System
+        class AudioManager {
+            constructor() {
+                this.audioContext = null;
+                this.sounds = {};
+                this.init();
+            }
+
+            init() {
+                try {
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    this.createSounds();
+                } catch (error) {
+                    console.log('Audio not supported');
+                }
+            }
+
+            createSounds() {
+                // Create different types of sounds using Web Audio API
+                this.sounds = {
+                    click: this.createTone(800, 0.1, 'sine'),
+                    success: this.createTone(600, 0.2, 'sine'),
+                    error: this.createTone(300, 0.3, 'square'),
+                    notification: this.createTone(1000, 0.15, 'triangle')
+                };
+            }
+
+            createTone(frequency, duration, type = 'sine') {
+                return () => {
+                    if (!soundEnabled || !this.audioContext) return;
+
+                    const oscillator = this.audioContext.createOscillator();
+                    const gainNode = this.audioContext.createGain();
+
+                    oscillator.connect(gainNode);
+                    gainNode.connect(this.audioContext.destination);
+
+                    oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+                    oscillator.type = type;
+
+                    gainNode.gain.setValueAtTime(0.1, this.audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + duration);
+
+                    oscillator.start(this.audioContext.currentTime);
+                    oscillator.stop(this.audioContext.currentTime + duration);
+                };
+            }
+
+            play(soundType) {
+                if (this.sounds[soundType] && soundEnabled) {
+                    this.sounds[soundType]();
+                    this.showSoundIndicator();
+                }
+            }
+
+            showSoundIndicator() {
+                const indicator = document.getElementById('soundIndicator');
+                indicator.classList.add('show');
+                setTimeout(() => {
+                    indicator.classList.remove('show');
+                }, 1000);
+            }
+        }
+
+        const audioManager = new AudioManager();
+
+        // 3. Theme Management
+        class ThemeManager {
+            constructor() {
+                this.currentTheme = 'light'; // Default theme
+                this.setupToggle();
+            }
+
+            loadTheme() {
+                // Use memory-based theme (no localStorage)
+                this.setTheme(this.currentTheme);
+            }
+
+            setTheme(theme) {
+                this.currentTheme = theme;
+                darkMode = theme === 'dark';
+                document.body.classList.toggle('dark-mode', darkMode);
+                
+                const themeIcon = document.querySelector('#themeToggle i');
+                themeIcon.className = darkMode ? 'fas fa-sun' : 'fas fa-moon';
+                
+                // Update meta theme color
+                let metaThemeColor = document.querySelector('meta[name="theme-color"]');
+                if (!metaThemeColor) {
+                    metaThemeColor = document.createElement('meta');
+                    metaThemeColor.name = 'theme-color';
+                    document.head.appendChild(metaThemeColor);
+                }
+                metaThemeColor.content = darkMode ? '#0a0a0a' : '#ffffff';
+            }
+
+            setupToggle() {
+                document.getElementById('themeToggle').addEventListener('click', () => {
+                    audioManager.play('click');
+                    this.setTheme(darkMode ? 'light' : 'dark');
+                });
+            }
+        }
+
+        const themeManager = new ThemeManager();
+
+        // 4. Navigation & UI Effects
+        class NavigationManager {
+            constructor() {
+                this.setupNavigation();
+                this.setupMobileMenu();
+                this.setupSmoothScroll();
+            }
+
+            setupNavigation() {
+                const navbar = document.getElementById('navbar');
+                
+                window.addEventListener('scroll', () => {
+                    navbar.classList.toggle('scrolled', window.scrollY > 50);
+                });
+
+                // Active nav link highlighting
+                const sections = document.querySelectorAll('section[id]');
+                const navLinks = document.querySelectorAll('.nav-link');
+
+                window.addEventListener('scroll', () => {
+                    let current = '';
+                    sections.forEach(section => {
+                        const sectionTop = section.offsetTop;
+                        const sectionHeight = section.clientHeight;
+                        if (scrollY >= (sectionTop - 200)) {
+                            current = section.getAttribute('id');
+                        }
+                    });
+
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href') === `#${current}`) {
+                            link.classList.add('active');
+                        }
+                    });
+                });
+            }
+
+            setupMobileMenu() {
+                const mobileToggle = document.getElementById('mobileMenuToggle');
+                const navMenu = document.getElementById('navMenu');
+
+                mobileToggle.addEventListener('click', () => {
+                    audioManager.play('click');
+                    navMenu.classList.toggle('active');
+                    
+                    const icon = mobileToggle.querySelector('i');
+                    icon.className = navMenu.classList.contains('active') ? 'fas fa-times' : 'fas fa-bars';
+                });
+
+                // Close mobile menu when clicking on links
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.addEventListener('click', () => {
+                        navMenu.classList.remove('active');
+                        mobileToggle.querySelector('i').className = 'fas fa-bars';
+                    });
+                });
+            }
+
+            setupSmoothScroll() {
+                document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                    anchor.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        const target = document.querySelector(this.getAttribute('href'));
+                        if (target) {
+                            audioManager.play('click');
+                            target.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start'
+                            });
+                        }
+                    });
+                });
+            }
+        }
+
+        const navigationManager = new NavigationManager();
+
+        // 5. Scroll Effects & Animations
+        class ScrollEffects {
+            constructor() {
+                this.setupScrollProgress();
+                this.setupParallaxEffect();
+                this.setupIntersectionObserver();
+            }
+
+            setupScrollProgress() {
+                const progressBar = document.getElementById('scrollProgress');
+                
+                window.addEventListener('scroll', () => {
+                    const scrollTop = document.documentElement.scrollTop;
+                    const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                    const scrollPercent = (scrollTop / scrollHeight) * 100;
+                    progressBar.style.width = scrollPercent + '%';
+                });
+            }
+
+            setupParallaxEffect() {
+                const parallaxElements = document.querySelectorAll('.parallax');
+                
+                window.addEventListener('scroll', () => {
+                    const scrolled = window.pageYOffset;
+                    parallaxElements.forEach(element => {
+                        const rate = scrolled * -0.5;
+                        element.style.transform = `translateY(${rate}px)`;
+                    });
+                });
+            }
+
+            setupIntersectionObserver() {
+                const observerOptions = {
+                    threshold: 0.1,
+                    rootMargin: '0px 0px -50px 0px'
+                };
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('fade-in');
+                        }
+                    });
+                }, observerOptions);
+
+                document.querySelectorAll('.card, .result-item').forEach(el => {
+                    observer.observe(el);
+                });
+            }
+        }
+
+        const scrollEffects = new ScrollEffects();
+
+        // 6. Form Handling & Validation
+        class FormManager {
+            constructor() {
+                this.form = document.getElementById('calculatorForm');
+                this.setupFormHandling();
+                this.setupFieldUpdates();
+            }
+
+            setupFormHandling() {
+                this.form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    audioManager.play('click');
+                    this.validateAndCalculate();
+                });
+
+                document.getElementById('resetForm').addEventListener('click', () => {
+                    audioManager.play('click');
+                    this.resetForm();
+                });
+            }
+
+            setupFieldUpdates() {
+                // Auto-update voltage based on system type
+                document.getElementById('systemType').addEventListener('change', (e) => {
+                    const voltage = SINGAPORE_STANDARDS.voltages[e.target.value];
+                    if (voltage) {
+                        document.getElementById('voltage').value = voltage;
+                    }
+                });
+
+                // Real-time validation feedback
+                const inputs = this.form.querySelectorAll('input, select');
+                inputs.forEach(input => {
+                    input.addEventListener('input', () => {
+                        this.validateField(input);
+                    });
+                });
+            }
+
+            validateField(field) {
+                field.classList.remove('error');
+                
+                if (field.hasAttribute('required') && !field.value) {
+                    field.classList.add('error');
+                    return false;
+                }
+
+                // Specific validations
+                if (field.type === 'number') {
+                    const value = parseFloat(field.value);
+                    const min = parseFloat(field.min);
+                    const max = parseFloat(field.max);
+                    
+                    if (min && value < min) {
+                        field.classList.add('error');
+                        return false;
+                    }
+                    
+                    if (max && value > max) {
+                        field.classList.add('error');
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            validateAndCalculate() {
+                const formData = new FormData(this.form);
+                const data = Object.fromEntries(formData);
+                
+                // Add manual field values
+                data.systemType = document.getElementById('systemType').value;
+                data.loadType = document.getElementById('loadType').value;
+                data.power = parseFloat(document.getElementById('power').value);
+                data.voltage = parseFloat(document.getElementById('voltage').value);
+                data.powerFactor = parseFloat(document.getElementById('powerFactor').value);
+                data.safetyFactor = parseFloat(document.getElementById('safetyFactor').value);
+                data.cableLength = parseFloat(document.getElementById('cableLength').value);
+                data.ambientTemp = parseFloat(document.getElementById('ambientTemp').value);
+                data.installationMethod = document.getElementById('installationMethod').value;
+                data.diversity = parseFloat(document.getElementById('diversity').value);
+
+                // Validate all fields
+                let isValid = true;
+                const inputs = this.form.querySelectorAll('input, select');
+                inputs.forEach(input => {
+                    if (!this.validateField(input)) {
+                        isValid = false;
+                    }
+                });
+
+                if (isValid) {
+                    this.showProgress();
+                    calculator.calculate(data);
+                } else {
+                    audioManager.play('error');
+                    this.showNotification('Please fill all required fields correctly', 'error');
+                }
+            }
+
+            showProgress() {
+                const progressContainer = document.getElementById('progressContainer');
+                const progressBar = document.getElementById('progressBar');
+                
+                progressContainer.classList.remove('hidden');
+                
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += Math.random() * 15;
+                    if (progress > 90) progress = 90;
+                    
+                    progressBar.style.width = progress + '%';
+                    progressBar.textContent = Math.round(progress) + '%';
+                    
+                    if (progress >= 90) {
+                        clearInterval(interval);
+                        setTimeout(() => {
+                            progressBar.style.width = '100%';
+                            progressBar.textContent = 'Complete!';
+                            setTimeout(() => {
+                                progressContainer.classList.add('hidden');
+                            }, 1000);
+                        }, 500);
+                    }
+                }, 100);
+            }
+
+            resetForm() {
+                this.form.reset();
+                document.getElementById('voltage').value = '';
+                document.getElementById('powerFactor').value = '0.85';
+                document.getElementById('safetyFactor').value = '1.25';
+                document.getElementById('ambientTemp').value = '30';
+                document.getElementById('diversity').value = '1';
+                
+                document.getElementById('resultsContainer').classList.remove('show');
+                document.getElementById('exportContainer').classList.add('hidden');
+                
+                this.showNotification('Form reset successfully', 'success');
+            }
+
+            showNotification(message, type = 'success') {
+                const notification = document.getElementById('notification');
+                notification.textContent = message;
+                notification.className = `notification ${type} show`;
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
+        }
+
+        const formManager = new FormManager();
+
+        // 7. Calculation Engine
+        class BreakerCalculator {
+            constructor() {
+                this.calculations = {};
+            }
+
+            calculate(data) {
+                try {
+                    // Store calculation data
+                    calculationData = { ...data, timestamp: new Date() };
+                    
+                    // Perform calculations
+                    const results = this.performCalculations(data);
+                    
+                    // Store results
+                    currentCalculation = results;
+                    
+                    // Display results
+                    this.displayResults(results);
+                    
+                    audioManager.play('success');
+                    
+                } catch (error) {
+                    console.error('Calculation error:', error);
+                    audioManager.play('error');
+                    formManager.showNotification('Calculation error. Please check your inputs.', 'error');
+                }
+            }
+
+            performCalculations(data) {
+                const results = {};
+                
+                // Basic electrical calculations
+                results.current = this.calculateCurrent(data);
+                results.adjustedCurrent = this.applyDeratings(results.current, data);
+                results.breakerSize = this.selectBreakerSize(results.adjustedCurrent);
+                results.voltageDrop = this.calculateVoltageDrop(data, results.current);
+                results.shortCircuitCurrent = this.calculateShortCircuit(data);
+                
+                // Compliance checks
+                results.compliance = this.checkCompliance(results, data);
+                results.recommendations = this.generateRecommendations(results, data);
+                
+                // Additional calculations
+                results.powerLoss = this.calculatePowerLoss(data, results.current);
+                results.efficiency = this.calculateEfficiency(data, results.powerLoss);
+                results.economicFactor = this.calculateEconomicFactor(results.breakerSize);
+                
+                return results;
+            }
+
+            calculateCurrent(data) {
+                let current;
+                
+                if (data.systemType === 'single-phase') {
+                    current = data.power / (data.voltage * data.powerFactor);
+                } else if (data.systemType === 'three-phase') {
+                    current = data.power / (Math.sqrt(3) * data.voltage * data.powerFactor);
+                } else {
+                    current = data.power / (Math.sqrt(3) * data.voltage * data.powerFactor);
+                }
+                
+                return current * data.diversity;
+            }
+
+            applyDeratings(current, data) {
+                let deratedCurrent = current;
+                
+                // Temperature derating
+                const tempFactor = this.getTemperatureDerating(data.ambientTemp);
+                deratedCurrent = deratedCurrent / tempFactor;
+                
+                // Installation method derating
+                const installFactor = SINGAPORE_STANDARDS.installationFactors[data.installationMethod] || 1.0;
+                deratedCurrent = deratedCurrent / installFactor;
+                
+                // Load type factor
+                const loadFactor = this.getLoadTypeFactor(data.loadType);
+                deratedCurrent = deratedCurrent * loadFactor;
+                
+                // Apply safety factor
+                deratedCurrent = deratedCurrent * data.safetyFactor;
+                
+                return deratedCurrent;
+            }
+
+            getTemperatureDerating(temp) {
+                const temps = Object.keys(SINGAPORE_STANDARDS.temperatureDerating)
+                    .map(Number)
+                    .sort((a, b) => a - b);
+                
+                if (temp <= temps[0]) return SINGAPORE_STANDARDS.temperatureDerating[temps[0]];
+                if (temp >= temps[temps.length - 1]) return SINGAPORE_STANDARDS.temperatureDerating[temps[temps.length - 1]];
+                
+                // Linear interpolation
+                for (let i = 0; i < temps.length - 1; i++) {
+                    if (temp >= temps[i] && temp <= temps[i + 1]) {
+                        const t1 = temps[i];
+                        const t2 = temps[i + 1];
+                        const f1 = SINGAPORE_STANDARDS.temperatureDerating[t1];
+                        const f2 = SINGAPORE_STANDARDS.temperatureDerating[t2];
+                        
+                        return f1 + (f2 - f1) * (temp - t1) / (t2 - t1);
+                    }
+                }
+                
+                return 1.0;
+            }
+
+            getLoadTypeFactor(loadType) {
+                const factors = {
+                    'resistive': 1.0,
+                    'inductive': 1.25,
+                    'capacitive': 1.1,
+                    'mixed': 1.15
+                };
+                return factors[loadType] || 1.0;
+            }
+
+            selectBreakerSize(current) {
+                // Find the next standard breaker size
+                const standardSizes = SINGAPORE_STANDARDS.standardBreakerSizes;
+                
+                for (let size of standardSizes) {
+                    if (size >= current) {
+                        return size;
+                    }
+                }
+                
+                // If current exceeds largest standard size
+                return Math.ceil(current / 100) * 100;
+            }
+
+            calculateVoltageDrop(data, current) {
+                // Simplified voltage drop calculation
+                // Assumes copper conductors and typical installation
+                const resistance = 0.018; // Ohm/km for typical copper cable
+                const reactance = 0.1; // Ohm/km for typical cable
+                
+                let voltageDrop;
+                
+                if (data.systemType === 'single-phase') {
+                    voltageDrop = 2 * current * (data.cableLength / 1000) * resistance;
+                } else {
+                    voltageDrop = Math.sqrt(3) * current * (data.cableLength / 1000) * 
+                                 Math.sqrt(resistance * resistance + reactance * reactance);
+                }
+                
+                return (voltageDrop / data.voltage) * 100; // Percentage
+            }
+
+            calculateShortCircuit(data) {
+                // Simplified short circuit calculation
+                // Based on typical Singapore network characteristics
+                const baseShortCircuit = {
+                    'single-phase': 10000, // 10kA
+                    'three-phase': 25000,  // 25kA
+                    'three-phase-high': 40000 // 40kA
+                };
+                
+                const base = baseShortCircuit[data.systemType] || 10000;
+                
+                // Reduce based on cable length (impedance)
+                const lengthFactor = 1 / (1 + data.cableLength * 0.001);
+                
+                return base * lengthFactor;
+            }
+
+            calculatePowerLoss(data, current) {
+                // Power loss in cables
+                const resistance = 0.018 * (data.cableLength / 1000); // Ohm
+                
+                if (data.systemType === 'single-phase') {
+                    return 2 * current * current * resistance; // I²R losses for both conductors
+                } else {
+                    return 3 * current * current * resistance; // I²R losses for three phases
+                }
+            }
+
+            calculateEfficiency(data, powerLoss) {
+                const efficiency = ((data.power - powerLoss) / data.power) * 100;
+                return Math.max(efficiency, 0);
+            }
+
+            calculateEconomicFactor(breakerSize) {
+                // Economic factor based on breaker size and cost considerations
+                const baseCost = {
+                    6: 50, 10: 60, 16: 75, 20: 90, 25: 110,
+                    32: 140, 40: 180, 50: 220, 63: 280, 80: 350,
+                    100: 450, 125: 580, 160: 750, 200: 950, 250: 1200,
+                    315: 1500, 400: 1800, 500: 2200, 630: 2800, 800: 3500,
+                    1000: 4500, 1250: 5800, 1600: 7500
+                };
+                
+                return baseCost[breakerSize] || breakerSize * 5;
+            }
+
+            checkCompliance(results, data) {
+                const compliance = {
+                    voltageDrop: results.voltageDrop <= SINGAPORE_STANDARDS.maxVoltageDrop * 100,
+                    breakerSize: results.breakerSize <= 1600, // Maximum standard size
+                    temperature: data.ambientTemp <= 60,
+                    powerFactor: data.powerFactor >= 0.7,
+                    overall: true
+                };
+                
+                compliance.overall = Object.values(compliance).every(Boolean);
+                
+                return compliance;
+            }
+
+            generateRecommendations(results, data) {
+                const recommendations = [];
+                
+                if (results.voltageDrop > 3) {
+                    recommendations.push({
+                        type: 'warning',
+                        message: 'Voltage drop exceeds 3%. Consider larger cable size.',
+                        priority: 'high'
+                    });
+                }
+                
+                if (data.powerFactor < 0.85) {
+                    recommendations.push({
+                        type: 'info',
+                        message: 'Consider power factor correction to improve efficiency.',
+                        priority: 'medium'
+                    });
+                }
+                
+                if (data.ambientTemp > 40) {
+                    recommendations.push({
+                        type: 'warning',
+                        message: 'High ambient temperature requires additional derating.',
+                        priority: 'high'
+                    });
+                }
+                
+                if (results.efficiency < 95) {
+                    recommendations.push({
+                        type: 'info',
+                        message: 'System efficiency is below optimal. Review cable sizing.',
+                        priority: 'low'
+                    });
+                }
+                
+                return recommendations;
+            }
+
+            displayResults(results) {
+                const container = document.getElementById('resultsContainer');
+                
+                container.innerHTML = `
+                    <h4><i class="fas fa-chart-line"></i> Calculation Results</h4>
+                    
+                    <div class="result-item">
+                        <span class="result-label">Load Current:</span>
+                        <span class="result-value">${results.current.toFixed(2)} A</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span class="result-label">Adjusted Current (with deratings):</span>
+                        <span class="result-value">${results.adjustedCurrent.toFixed(2)} A</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span class="result-label"><strong>Recommended Breaker Size:</strong></span>
+                        <span class="result-value" style="font-size: 1.3em; color: var(--primary-color);">
+                            ${results.breakerSize} A
+                        </span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span class="result-label">Voltage Drop:</span>
+                        <span class="result-value ${results.voltageDrop > 5 ? 'text-danger' : ''}">${results.voltageDrop.toFixed(2)}%</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span class="result-label">Short Circuit Current:</span>
+                        <span class="result-value">${(results.shortCircuitCurrent / 1000).toFixed(1)} kA</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span class="result-label">System Efficiency:</span>
+                        <span class="result-value">${results.efficiency.toFixed(1)}%</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span class="result-label">Estimated Cost:</span>
+                        <span class="result-value">S$${results.economicFactor.toFixed(0)}</span>
+                    </div>
+                    
+                    ${this.generateComplianceSection(results.compliance)}
+                    ${this.generateRecommendationsSection(results.recommendations)}
+                    ${this.generateCircuitDiagram()}
+                `;
+                
+                container.classList.add('show');
+                document.getElementById('exportContainer').classList.remove('hidden');
+            }
+
+            generateComplianceSection(compliance) {
+                const status = compliance.overall ? 'Compliant' : 'Non-Compliant';
+                const statusClass = compliance.overall ? 'success' : 'danger';
+                
+                return `
+                    <div class="result-item" style="background: rgba(${compliance.overall ? '39, 174, 96' : '231, 76, 60'}, 0.1); border-left-color: var(--${statusClass}-color);">
+                        <span class="result-label">Singapore Standards Compliance:</span>
+                        <span class="result-value" style="color: var(--${statusClass}-color);">
+                            <i class="fas fa-${compliance.overall ? 'check-circle' : 'exclamation-triangle'}"></i>
+                            ${status}
+                        </span>
+                    </div>
+                `;
+            }
+
+            generateRecommendationsSection(recommendations) {
+                if (recommendations.length === 0) return '';
+                
+                let html = '<div style="margin-top: 2rem;"><h5><i class="fas fa-lightbulb"></i> Recommendations</h5>';
+                
+                recommendations.forEach(rec => {
+                    const iconClass = rec.type === 'warning' ? 'exclamation-triangle' : 'info-circle';
+                    const colorClass = rec.type === 'warning' ? 'warning' : 'primary';
+                    
+                    html += `
+                        <div class="${rec.type}-message">
+                            <i class="fas fa-${iconClass}"></i>
+                            ${rec.message}
+                            <span style="float: right; font-size: 0.8em; opacity: 0.7;">Priority: ${rec.priority}</span>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+                return html;
+            }
+
+            generateCircuitDiagram() {
+                return `
+                    <div class="circuit-diagram">
+                        <h5><i class="fas fa-project-diagram"></i> Circuit Representation</h5>
+                        <div>
+                            <span class="circuit-symbol">⚡</span>
+                            <span class="circuit-symbol">——</span>
+                            <span class="circuit-symbol">🔲</span>
+                            <span class="circuit-symbol">——</span>
+                            <span class="circuit-symbol">💡</span>
+                        </div>
+                        <p style="font-size: 0.9em; opacity: 0.8; margin-top: 1rem;">
+                            Supply → Cable → Breaker (${currentCalculation?.breakerSize}A) → Cable → Load
+                        </p>
+                    </div>
+                `;
+            }
+        }
+
+        const calculator = new BreakerCalculator();
+
+        // 8. Results Display & Formatting (already included in calculator)
+
+        // 9. Report Generation
+        class ReportGenerator {
+            constructor() {
+                this.setupReportModal();
+            }
+
+            setupReportModal() {
+                document.getElementById('viewReport').addEventListener('click', () => {
+                    audioManager.play('click');
+                    this.showReportModal();
+                });
+
+                document.getElementById('modalClose').addEventListener('click', () => {
+                    audioManager.play('click');
+                    this.hideReportModal();
+                });
+
+                // Close modal on outside click
+                document.getElementById('reportModal').addEventListener('click', (e) => {
+                    if (e.target.id === 'reportModal') {
+                        this.hideReportModal();
+                    }
+                });
+            }
+
+            showReportModal() {
+                if (!currentCalculation) {
+                    formManager.showNotification('No calculation data available', 'error');
+                    return;
+                }
+
+                const modal = document.getElementById('reportModal');
+                const content = document.getElementById('reportContent');
+                
+                content.innerHTML = this.generateDetailedReport();
+                modal.classList.add('show');
+            }
+
+            hideReportModal() {
+                document.getElementById('reportModal').classList.remove('show');
+            }
+
+            generateDetailedReport() {
+                const data = calculationData;
+                const results = currentCalculation;
+                
+                return `
+                    <div class="report-container" id="reportForExport">
+                        <div class="report-header">
+                            <h3>Electrical Breaker Sizing Calculation Report</h3>
+                            <p>Singapore Standards Compliant Design</p>
+                            <div class="report-meta">
+                                <div><strong>Date:</strong> ${data.timestamp.toLocaleDateString()}</div>
+                                <div><strong>Time:</strong> ${data.timestamp.toLocaleTimeString()}</div>
+                                <div><strong>Standard:</strong> SS 638 / IEC 60364</div>
+                                <div><strong>Report ID:</strong> ${this.generateReportId()}</div>
+                            </div>
+                        </div>
+
+                        <div class="report-section">
+                            <h4>System Parameters</h4>
+                            <table class="report-table">
+                                <tr><td>System Type</td><td>${this.formatSystemType(data.systemType)}</td></tr>
+                                <tr><td>Load Type</td><td>${this.formatLoadType(data.loadType)}</td></tr>
+                                <tr><td>Power Rating</td><td>${data.power.toLocaleString()} W</td></tr>
+                                <tr><td>Operating Voltage</td><td>${data.voltage} V</td></tr>
+                                <tr><td>Power Factor</td><td>${data.powerFactor}</td></tr>
+                                <tr><td>Safety Factor</td><td>${data.safetyFactor}</td></tr>
+                                <tr><td>Cable Length</td><td>${data.cableLength} m</td></tr>
+                                <tr><td>Ambient Temperature</td><td>${data.ambientTemp}°C</td></tr>
+                                <tr><td>Installation Method</td><td>${this.formatInstallationMethod(data.installationMethod)}</td></tr>
+                                <tr><td>Diversity Factor</td><td>${data.diversity}</td></tr>
+                            </table>
+                        </div>
+
+                        <div class="report-section">
+                            <h4>Calculation Results</h4>
+                            <table class="report-table">
+                                <tr><td>Load Current</td><td>${results.current.toFixed(2)} A</td></tr>
+                                <tr><td>Temperature Derating Factor</td><td>${calculator.getTemperatureDerating(data.ambientTemp).toFixed(3)}</td></tr>
+                                <tr><td>Installation Derating Factor</td><td>${SINGAPORE_STANDARDS.installationFactors[data.installationMethod]}</td></tr>
+                                <tr><td>Load Type Factor</td><td>${calculator.getLoadTypeFactor(data.loadType)}</td></tr>
+                                <tr><td>Adjusted Current</td><td>${results.adjustedCurrent.toFixed(2)} A</td></tr>
+                                <tr><td><strong>Recommended Breaker Size</strong></td><td><strong>${results.breakerSize} A</strong></td></tr>
+                                <tr><td>Voltage Drop</td><td>${results.voltageDrop.toFixed(2)}%</td></tr>
+                                <tr><td>Short Circuit Current</td><td>${(results.shortCircuitCurrent/1000).toFixed(1)} kA</td></tr>
+                                <tr><td>Power Loss</td><td>${results.powerLoss.toFixed(2)} W</td></tr>
+                                <tr><td>System Efficiency</td><td>${results.efficiency.toFixed(1)}%</td></tr>
+                                <tr><td>Estimated Cost</td><td>S$${results.economicFactor.toFixed(0)}</td></tr>
+                            </table>
+                        </div>
+
+                        <div class="report-section">
+                            <h4>Compliance Assessment</h4>
+                            <table class="report-table">
+                                <tr><td>Voltage Drop Compliance</td><td>${results.compliance.voltageDrop ? '✓ Pass' : '✗ Fail'}</td></tr>
+                                <tr><td>Breaker Size Validity</td><td>${results.compliance.breakerSize ? '✓ Pass' : '✗ Fail'}</td></tr>
+                                <tr><td>Temperature Limits</td><td>${results.compliance.temperature ? '✓ Pass' : '✗ Fail'}</td></tr>
+                                <tr><td>Power Factor Requirements</td><td>${results.compliance.powerFactor ? '✓ Pass' : '✗ Fail'}</td></tr>
+                                <tr><td><strong>Overall Compliance</strong></td><td><strong>${results.compliance.overall ? '✓ COMPLIANT' : '✗ NON-COMPLIANT'}</strong></td></tr>
+                            </table>
+                        </div>
+
+                        ${this.generateRecommendationsTable(results.recommendations)}
+                        ${this.generateStandardsSection()}
+                        ${this.generateDisclaimerSection()}
+                    </div>
+                `;
+            }
+
+            generateRecommendationsTable(recommendations) {
+                if (recommendations.length === 0) return '';
+
+                let html = `
+                    <div class="report-section">
+                        <h4>Recommendations</h4>
+                        <table class="report-table">
+                            <thead>
+                                <tr><th>Priority</th><th>Type</th><th>Recommendation</th></tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                recommendations.forEach(rec => {
+                    html += `<tr><td>${rec.priority}</td><td>${rec.type}</td><td>${rec.message}</td></tr>`;
+                });
+
+                html += `</tbody></table></div>`;
+                return html;
+            }
+
+            generateStandardsSection() {
+                return `
+                    <div class="report-section">
+                        <h4>Applicable Standards & Regulations</h4>
+                        <ul style="list-style-type: disc; padding-left: 2rem;">
+                            <li>SS 638:2018 - Code of Practice for Electrical Installations</li>
+                            <li>IEC 60364 - Low-voltage electrical installations</li>
+                            <li>IEC 60898 - Circuit-breakers for overcurrent protection for household and similar installations</li>
+                            <li>CP 5:1998 - Code of Practice for Electrical Installations</li>
+                            <li>Building and Construction Authority (BCA) requirements</li>
+                            <li>Energy Market Authority (EMA) regulations</li>
+                        </ul>
+                    </div>
+                `;
+            }
+
+            generateDisclaimerSection() {
+                return `
+                    <div class="report-section">
+                        <h4>Important Disclaimer</h4>
+                        <p style="font-size: 0.9em; line-height: 1.6;">
+                            This calculation report is generated for guidance purposes only and should not replace professional electrical engineering assessment. 
+                            All electrical installations must be designed, installed, and certified by qualified electrical engineers in accordance with 
+                            Singapore standards and regulations. The user assumes full responsibility for the accuracy of input data and the suitability 
+                            of the calculated results for the specific application. Always consult with licensed electrical professionals for final design approval.
+                        </p>
+                        
+                        <p style="font-size: 0.8em; color: #666; margin-top: 1rem;">
+                            <strong>Generated by:</strong> Amp-Engine Electrical Breaker Calculator v2.0<br>
+                            <strong>Calculation Engine:</strong> Advanced Multi-factor Analysis<br>
+                            <strong>Standards Version:</strong> SS 638:2018, IEC 60364 Series
+                        </p>
+                    </div>
+                `;
+            }
+
+            formatSystemType(type) {
+                const types = {
+                    'single-phase': 'Single Phase (230V)',
+                    'three-phase': 'Three Phase (400V)',
+                    'three-phase-high': 'Three Phase High Voltage (6.6kV)'
+                };
+                return types[type] || type;
+            }
+
+            formatLoadType(type) {
+                const types = {
+                    'resistive': 'Resistive (Heating, Lighting)',
+                    'inductive': 'Inductive (Motors, Transformers)',
+                    'capacitive': 'Capacitive (Power Factor Correction)',
+                    'mixed': 'Mixed Load'
+                };
+                return types[type] || type;
+            }
+
+            formatInstallationMethod(method) {
+                const methods = {
+                    'surface': 'Surface Mounting',
+                    'conduit': 'Conduit/Trunking',
+                    'underground': 'Underground',
+                    'overhead': 'Overhead'
+                };
+                return methods[method] || method;
+            }
+
+            generateReportId() {
+                const timestamp = Date.now().toString(36);
+                const random = Math.random().toString(36).substr(2, 5);
+                return `SGE-${timestamp}-${random}`.toUpperCase();
+            }
+        }
+
+        const reportGenerator = new ReportGenerator();
+
+        // 10. PDF Export Functionality
+        class PDFExporter {
+            constructor() {
+                this.setupExportButton();
+                this.checkLibraryAvailability();
+            }
+
+            checkLibraryAvailability() {
+                // Check if jsPDF is loaded
+                setTimeout(() => {
+                    if (typeof window.jspdf === 'undefined') {
+                        console.warn('jsPDF library not loaded. PDF export may not work.');
+                        const pdfButton = document.getElementById('exportPDF');
+                        if (pdfButton) {
+                            pdfButton.title = 'PDF library loading...';
+                        }
+                    }
+                }, 2000);
+            }
+
+            setupExportButton() {
+                document.getElementById('exportPDF').addEventListener('click', () => {
+                    audioManager.play('click');
+                    this.exportToPDF();
+                });
+            }
+
+            async exportToPDF() {
+                if (!currentCalculation) {
+                    formManager.showNotification('No calculation data to export', 'error');
+                    return;
+                }
+
+                try {
+                    const button = document.getElementById('exportPDF');
+                    const originalText = button.innerHTML;
+                    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
+                    button.disabled = true;
+
+                    // Wait a bit for UI update
+                    await new Promise(resolve => setTimeout(resolve, 100));
+
+                    // Check if jsPDF is available
+                    if (typeof window.jspdf === 'undefined') {
+                        throw new Error('PDF library not loaded');
+                    }
+
+                    // Create PDF content
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF('p', 'mm', 'a4');
+                    
+                    // Add content manually for better control
+                    const data = calculationData;
+                    const results = currentCalculation;
+                    
+                    // Header
+                    pdf.setFontSize(20);
+                    pdf.setTextColor(0, 100, 200);
+                    pdf.text('Amp-Engine Electrical Breaker Calculator', 20, 30);
+                    
+                    pdf.setFontSize(14);
+                    pdf.setTextColor(0, 0, 0);
+                    pdf.text('Professional Calculation Report', 20, 40);
+                    
+                    pdf.setFontSize(10);
+                    pdf.text(`Generated: ${data.timestamp.toLocaleString()}`, 20, 50);
+                    pdf.text(`Report ID: ${reportGenerator.generateReportId()}`, 120, 50);
+
+                    // System Parameters
+                    let yPos = 70;
+                    pdf.setFontSize(14);
+                    pdf.setTextColor(0, 100, 200);
+                    pdf.text('System Parameters', 20, yPos);
+                    yPos += 10;
+                    
+                    pdf.setFontSize(10);
+                    pdf.setTextColor(0, 0, 0);
+                    pdf.text(`System Type: ${reportGenerator.formatSystemType(data.systemType)}`, 20, yPos);
+                    pdf.text(`Load Type: ${reportGenerator.formatLoadType(data.loadType)}`, 110, yPos);
+                    yPos += 8;
+                    pdf.text(`Power Rating: ${data.power.toLocaleString()} W`, 20, yPos);
+                    pdf.text(`Voltage: ${data.voltage} V`, 110, yPos);
+                    yPos += 8;
+                    pdf.text(`Power Factor: ${data.powerFactor}`, 20, yPos);
+                    pdf.text(`Safety Factor: ${data.safetyFactor}`, 110, yPos);
+                    yPos += 8;
+                    pdf.text(`Cable Length: ${data.cableLength} m`, 20, yPos);
+                    pdf.text(`Ambient Temperature: ${data.ambientTemp}°C`, 110, yPos);
+                    yPos += 8;
+                    pdf.text(`Installation Method: ${reportGenerator.formatInstallationMethod(data.installationMethod)}`, 20, yPos);
+                    pdf.text(`Diversity Factor: ${data.diversity}`, 110, yPos);
+
+                    // Results
+                    yPos += 20;
+                    pdf.setFontSize(14);
+                    pdf.setTextColor(0, 100, 200);
+                    pdf.text('Calculation Results', 20, yPos);
+                    yPos += 10;
+                    
+                    pdf.setFontSize(10);
+                    pdf.setTextColor(0, 0, 0);
+                    pdf.text(`Load Current: ${results.current.toFixed(2)} A`, 20, yPos);
+                    pdf.text(`Adjusted Current: ${results.adjustedCurrent.toFixed(2)} A`, 110, yPos);
+                    yPos += 8;
+                    
+                    // Highlighted breaker size
+                    pdf.setFontSize(12);
+                    pdf.setTextColor(0, 150, 0);
+                    pdf.text(`RECOMMENDED BREAKER SIZE: ${results.breakerSize} A`, 20, yPos);
+                    yPos += 12;
+                    
+                    pdf.setFontSize(10);
+                    pdf.setTextColor(0, 0, 0);
+                    pdf.text(`Voltage Drop: ${results.voltageDrop.toFixed(2)}%`, 20, yPos);
+                    pdf.text(`Short Circuit Current: ${(results.shortCircuitCurrent/1000).toFixed(1)} kA`, 110, yPos);
+                    yPos += 8;
+                    pdf.text(`System Efficiency: ${results.efficiency.toFixed(1)}%`, 20, yPos);
+                    pdf.text(`Estimated Cost: S${results.economicFactor.toFixed(0)}`, 110, yPos);
+
+                    // Compliance
+                    yPos += 20;
+                    pdf.setFontSize(14);
+                    pdf.setTextColor(0, 100, 200);
+                    pdf.text('Standards Compliance', 20, yPos);
+                    yPos += 10;
+                    
+                    pdf.setFontSize(10);
+                    const complianceColor = results.compliance.overall ? [0, 150, 0] : [200, 0, 0];
+                    pdf.setTextColor(...complianceColor);
+                    pdf.text(`Overall Compliance: ${results.compliance.overall ? 'COMPLIANT' : 'NON-COMPLIANT'}`, 20, yPos);
+                    yPos += 8;
+                    
+                    pdf.setTextColor(0, 0, 0);
+                    pdf.text(`Voltage Drop: ${results.compliance.voltageDrop ? 'Pass' : 'Fail'}`, 20, yPos);
+                    pdf.text(`Temperature Limits: ${results.compliance.temperature ? 'Pass' : 'Fail'}`, 110, yPos);
+                    yPos += 8;
+                    pdf.text(`Power Factor: ${results.compliance.powerFactor ? 'Pass' : 'Fail'}`, 20, yPos);
+
+                    // Standards
+                    yPos += 20;
+                    pdf.setFontSize(14);
+                    pdf.setTextColor(0, 100, 200);
+                    pdf.text('Applicable Standards', 20, yPos);
+                    yPos += 10;
+                    
+                    pdf.setFontSize(10);
+                    pdf.setTextColor(0, 0, 0);
+                    const standards = [
+                        'SS 638:2018 - Code of Practice for Electrical Installations',
+                        'IEC 60364 - Low-voltage electrical installations',
+                        'IEC 60898 - Circuit-breakers for overcurrent protection',
+                        'Building and Construction Authority (BCA) requirements'
+                    ];
+                    
+                    standards.forEach(standard => {
+                        pdf.text(`• ${standard}`, 20, yPos);
+                        yPos += 6;
+                    });
+
+                    // Disclaimer
+                    yPos += 15;
+                    pdf.setFontSize(8);
+                    pdf.setTextColor(100, 100, 100);
+                    const disclaimer = 'This calculation report is for guidance only. All electrical installations must be designed by qualified engineers.';
+                    pdf.text(disclaimer, 20, yPos, { maxWidth: 170 });
+
+                    // Save the PDF
+                    pdf.save(`Amp-Engine_Breaker_Calculation_${new Date().toISOString().slice(0,10)}.pdf`);
+
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                    
+                    formManager.showNotification('PDF exported successfully!', 'success');
+                    audioManager.play('success');
+
+                } catch (error) {
+                    console.error('PDF export error:', error);
+                    formManager.showNotification(`Error exporting PDF: ${error.message}`, 'error');
+                    audioManager.play('error');
+                    
+                    const button = document.getElementById('exportPDF');
+                    button.innerHTML = '<i class="fas fa-file-pdf"></i> Export PDF';
+                    button.disabled = false;
+                }
+            }
+
+            styleTempContainerForPDF(container) {
+                // Apply PDF-specific styles
+                const styles = `
+                    <style>
+                        .report-container { background: white !important; color: black !important; }
+                        .report-table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+                        .report-table th, .report-table td { 
+                            border: 1px solid #ddd; 
+                            padding: 8px; 
+                            text-align: left;
+                            font-size: 11px;
+                        }
+                        .report-table th { background: #f5f5f5; font-weight: bold; }
+                        .report-header h3 { color: #2c3e50; margin-bottom: 10px; }
+                        .report-section { margin-bottom: 20px; page-break-inside: avoid; }
+                        .report-section h4 { color: #34495e; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+                        .report-meta { display: flex; flex-wrap: wrap; gap: 10px; margin: 10px 0; }
+                        .report-meta div { 
+                            background: #f8f9fa; 
+                            padding: 5px 10px; 
+                            border-radius: 4px; 
+                            font-size: 10px;
+                        }
+                        .circuit-diagram { display: none; }
+                        ul { margin: 10px 0; padding-left: 20px; }
+                        li { margin: 5px 0; }
+                    </style>
+                `;
+                
+                container.insertAdjacentHTML('afterbegin', styles);
+            }
+        }
+
+        const pdfExporter = new PDFExporter();
+
+        // 11. PNG Export Functionality
+        class PNGExporter {
+            constructor() {
+                this.setupExportButton();
+                this.checkLibraryAvailability();
+            }
+
+            checkLibraryAvailability() {
+                // Check if html2canvas is loaded
+                setTimeout(() => {
+                    if (typeof html2canvas === 'undefined') {
+                        console.warn('html2canvas library not loaded. PNG export may not work.');
+                        const pngButton = document.getElementById('exportPNG');
+                        if (pngButton) {
+                            pngButton.title = 'PNG library loading...';
+                        }
+                    }
+                }, 2000);
+            }
+
+            setupExportButton() {
+                document.getElementById('exportPNG').addEventListener('click', () => {
+                    audioManager.play('click');
+                    this.exportToPNG();
+                });
+            }
+
+            async exportToPNG() {
+                if (!currentCalculation) {
+                    formManager.showNotification('No calculation data to export', 'error');
+                    return;
+                }
+
+                try {
+                    const button = document.getElementById('exportPNG');
+                    const originalText = button.innerHTML;
+                    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PNG...';
+                    button.disabled = true;
+
+                    // Wait a bit for UI update
+                    await new Promise(resolve => setTimeout(resolve, 100));
+
+                    // Check if html2canvas is available
+                    if (typeof html2canvas === 'undefined') {
+                        throw new Error('PNG export library not loaded');
+                    }
+
+                    // Create a visible container for better rendering
+                    const tempContainer = document.createElement('div');
+                    tempContainer.innerHTML = this.generatePNGReport();
+                    tempContainer.style.cssText = `
+                        position: fixed;
+                        top: -5000px;
+                        left: 0;
+                        width: 800px;
+                        padding: 40px;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: white;
+                        font-family: 'Segoe UI', sans-serif;
+                        border-radius: 12px;
+                        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+                        z-index: 9999;
+                    `;
+                    
+                    document.body.appendChild(tempContainer);
+
+                    // Wait for fonts to load
+                    await new Promise(resolve => setTimeout(resolve, 500));
+
+                    // Generate PNG using html2canvas with better options
+                    const canvas = await html2canvas(tempContainer, {
+                        backgroundColor: null,
+                        scale: 2,
+                        useCORS: true,
+                        allowTaint: true,
+                        foreignObjectRendering: true,
+                        logging: false,
+                        width: 880, // 800 + padding
+                        height: tempContainer.scrollHeight + 80
+                    });
+
+                    // Create download link
+                    const link = document.createElement('a');
+                    link.download = `Amp-Engine_Breaker_Calculation_${new Date().toISOString().slice(0,10)}.png`;
+
+                    // Convert canvas to blob and create URL
+                    canvas.toBlob((blob) => {
+                        const url = URL.createObjectURL(blob);
+                        link.href = url;
+                        link.click();
+                        URL.revokeObjectURL(url);
+                    }, 'image/png', 1.0);
+
+                    // Cleanup
+                    document.body.removeChild(tempContainer);
+                    
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                    
+                    formManager.showNotification('PNG exported successfully!', 'success');
+                    audioManager.play('success');
+
+                } catch (error) {
+                    console.error('PNG export error:', error);
+                    formManager.showNotification(`Error exporting PNG: ${error.message}`, 'error');
+                    audioManager.play('error');
+                    
+                    const button = document.getElementById('exportPNG');
+                    button.innerHTML = '<i class="fas fa-image"></i> Export PNG';
+                    button.disabled = false;
+                }
+            }
+
+            generatePNGReport() {
+                const data = calculationData;
+                const results = currentCalculation;
+                
+                return `
+                    <div style="background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%); 
+                                border-radius: 12px; padding: 30px; backdrop-filter: blur(10px);">
+                        <div style="text-align: center; margin-bottom: 30px;">
+                            <h2 style="color: #fff; margin: 0; font-size: 28px; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                                ⚡ Amp-Engine Electrical Breaker Calculator
+                            </h2>
+                            <p style="color: rgba(255,255,255,0.9); margin: 10px 0; font-size: 16px;">
+                                Professional Calculation Report - ${data.timestamp.toLocaleDateString()}
+                            </p>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                            <div style="background: rgba(255,255,255,0.1); border-radius: 8px; padding: 20px;">
+                                <h3 style="color: #00d4ff; margin-bottom: 15px; font-size: 18px;">
+                                    📊 System Parameters
+                                </h3>
+                                <div style="space-y: 8px;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                        <span>System Type:</span>
+                                        <strong>${reportGenerator.formatSystemType(data.systemType)}</strong>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                        <span>Power Rating:</span>
+                                        <strong>${data.power.toLocaleString()} W</strong>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                        <span>Voltage:</span>
+                                        <strong>${data.voltage} V</strong>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                        <span>Power Factor:</span>
+                                        <strong>${data.powerFactor}</strong>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                        <span>Cable Length:</span>
+                                        <strong>${data.cableLength} m</strong>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                        <span>Ambient Temp:</span>
+                                        <strong>${data.ambientTemp}°C</strong>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="background: rgba(255,255,255,0.1); border-radius: 8px; padding: 20px;">
+                                <h3 style="color: #ff6b35; margin-bottom: 15px; font-size: 18px;">
+                                    ⚡ Calculation Results
+                                </h3>
+                                <div style="space-y: 8px;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                        <span>Load Current:</span>
+                                        <strong>${results.current.toFixed(2)} A</strong>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                        <span>Adjusted Current:</span>
+                                        <strong>${results.adjustedCurrent.toFixed(2)} A</strong>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px; 
+                                                background: rgba(0,212,255,0.2); padding: 8px; border-radius: 4px;">
+                                        <span style="font-size: 16px;">Breaker Size:</span>
+                                        <strong style="font-size: 20px; color: #00d4ff;">${results.breakerSize} A</strong>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                        <span>Voltage Drop:</span>
+                                        <strong style="color: ${results.voltageDrop > 5 ? '#ff6b35' : '#27ae60'}">
+                                            ${results.voltageDrop.toFixed(2)}%
+                                        </strong>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                        <span>Efficiency:</span>
+                                        <strong>${results.efficiency.toFixed(1)}%</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="background: rgba(255,255,255,0.1); border-radius: 8px; padding: 20px; margin-top: 30px;">
+                            <h3 style="color: #8e44ad; margin-bottom: 15px; font-size: 18px;">
+                                ✅ Standards Compliance
+                            </h3>
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; text-align: center;">
+                                <div style="background: rgba(${results.compliance.voltageDrop ? '39,174,96' : '231,76,60'},0.3); 
+                                           border-radius: 6px; padding: 10px;">
+                                    <div style="font-size: 24px; margin-bottom: 5px;">
+                                        ${results.compliance.voltageDrop ? '✅' : '❌'}
+                                    </div>
+                                    <div>Voltage Drop</div>
+                                </div>
+                                <div style="background: rgba(${results.compliance.temperature ? '39,174,96' : '231,76,60'},0.3); 
+                                           border-radius: 6px; padding: 10px;">
+                                    <div style="font-size: 24px; margin-bottom: 5px;">
+                                        ${results.compliance.temperature ? '✅' : '❌'}
+                                    </div>
+                                    <div>Temperature</div>
+                                </div>
+                                <div style="background: rgba(${results.compliance.overall ? '39,174,96' : '231,76,60'},0.3); 
+                                           border-radius: 6px; padding: 10px;">
+                                    <div style="font-size: 24px; margin-bottom: 5px;">
+                                        ${results.compliance.overall ? '✅' : '❌'}
+                                    </div>
+                                    <div><strong>Overall</strong></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="text-align: center; margin-top: 30px; padding-top: 20px; 
+                                    border-top: 1px solid rgba(255,255,255,0.2);">
+                            <p style="color: rgba(255,255,255,0.7); font-size: 12px; margin: 0;">
+                                Generated by Amp-Engine Electrical Breaker Calculator | 
+                                Compliant with SS 638 & IEC Standards | 
+                                Report ID: ${reportGenerator.generateReportId()}
+                            </p>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        const pngExporter = new PNGExporter();
+
+        // 12. Modal Management (already included in ReportGenerator)
+
+        // 13. Notification System (already included in FormManager)
+
+        // 14. Touch & Mobile Support
+        class TouchSupport {
+            constructor() {
+                this.setupTouchEvents();
+                this.setupMobileOptimizations();
+            }
+
+            setupTouchEvents() {
+                // Add touch feedback to interactive elements
+                const touchElements = document.querySelectorAll('.btn, .nav-link, .card');
+                
+                touchElements.forEach(element => {
+                    element.addEventListener('touchstart', this.handleTouchStart, { passive: true });
+                    element.addEventListener('touchend', this.handleTouchEnd, { passive: true });
+                });
+            }
+
+            handleTouchStart(e) {
+                e.currentTarget.classList.add('touch-active');
+            }
+
+            handleTouchEnd(e) {
+                setTimeout(() => {
+                    e.currentTarget.classList.remove('touch-active');
+                }, 150);
+            }
+
+            setupMobileOptimizations() {
+                // Prevent zoom on form inputs on iOS
+                if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+                    const viewportMeta = document.createElement('meta');
+                    viewportMeta.name = 'viewport';
+                    viewportMeta.content = 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no';
+                    document.head.appendChild(viewportMeta);
+                }
+
+                // Optimize touch scrolling
+                document.body.style.webkitOverflowScrolling = 'touch';
+            }
+        }
+
+        const touchSupport = new TouchSupport();
+
+        // 15. Responsive Utilities
+        class ResponsiveManager {
+            constructor() {
+                this.breakpoints = {
+                    mobile: 480,
+                    tablet: 768,
+                    desktop: 1024
+                };
+                this.setupResponsiveHelpers();
+                this.setupOrientationChange();
+            }
+
+            setupResponsiveHelpers() {
+                window.addEventListener('resize', this.debounce(this.handleResize.bind(this), 250));
+                this.handleResize(); // Initial call
+            }
+
+            handleResize() {
+                const width = window.innerWidth;
+                
+                // Update body classes for responsive styling
+                document.body.classList.toggle('mobile', width <= this.breakpoints.mobile);
+                document.body.classList.toggle('tablet', width > this.breakpoints.mobile && width <= this.breakpoints.tablet);
+                document.body.classList.toggle('desktop', width > this.breakpoints.tablet);
+
+                // Adjust form layout on mobile
+                if (width <= this.breakpoints.mobile) {
+                    this.optimizeForMobile();
+                }
+            }
+
+            optimizeForMobile() {
+                // Mobile-specific optimizations
+                const formRows = document.querySelectorAll('.form-row');
+                formRows.forEach(row => {
+                    row.style.flexDirection = 'column';
+                });
+            }
+
+            setupOrientationChange() {
+                window.addEventListener('orientationchange', () => {
+                    setTimeout(this.handleResize.bind(this), 100);
+                });
+            }
+
+            debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
+        }
+
+        const responsiveManager = new ResponsiveManager();
+
+        // 16. Performance Optimization
+        class PerformanceOptimizer {
+            constructor() {
+                this.setupIntersectionObserver();
+                this.setupImageLazyLoading();
+                this.optimizeAnimations();
+            }
+
+            setupIntersectionObserver() {
+                const observerOptions = {
+                    threshold: 0.1,
+                    rootMargin: '50px'
+                };
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('animate-in');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, observerOptions);
+
+                document.querySelectorAll('.card').forEach(el => {
+                    observer.observe(el);
+                });
+            }
+
+            setupImageLazyLoading() {
+                // If images are added later, implement lazy loading
+                const images = document.querySelectorAll('img[data-src]');
+                const imageObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const img = entry.target;
+                            img.src = img.dataset.src;
+                            img.classList.remove('lazy');
+                            imageObserver.unobserve(img);
+                        }
+                    });
+                });
+
+                images.forEach(img => imageObserver.observe(img));
+            }
+
+            optimizeAnimations() {
+                // Reduce animations on slower devices
+                if ('connection' in navigator) {
+                    const connection = navigator.connection;
+                    if (connection.effectiveType === 'slow-2g' || connection.effectiveType === '2g') {
+                        document.body.classList.add('reduce-motion');
+                    }
+                }
+
+                // Respect user's motion preferences
+                if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    document.body.classList.add('reduce-motion');
+                }
+            }
+        }
+
+        const performanceOptimizer = new PerformanceOptimizer();
+
+        // 17. Error Handling
+        class ErrorHandler {
+            constructor() {
+                this.setupGlobalErrorHandling();
+                this.setupUnhandledPromiseRejection();
+            }
+
+            setupGlobalErrorHandling() {
+                window.addEventListener('error', (event) => {
+                    console.error('Global error:', event.error);
+                    this.showUserFriendlyError('An unexpected error occurred. Please refresh the page and try again.');
+                });
+            }
+
+            setupUnhandledPromiseRejection() {
+                window.addEventListener('unhandledrejection', (event) => {
+                    console.error('Unhandled promise rejection:', event.reason);
+                    event.preventDefault();
+                    this.showUserFriendlyError('A network error occurred. Please check your connection and try again.');
+                });
+            }
+
+            showUserFriendlyError(message) {
+                const notification = document.getElementById('notification');
+                notification.textContent = message;
+                notification.className = 'notification error show';
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 5000);
+            }
+        }
+
+        const errorHandler = new ErrorHandler();
+
+        // 18. Data Storage (Memory-based as per requirements)
+        class DataManager {
+            constructor() {
+                this.storage = new Map();
+                this.calculations = [];
+            }
+
+            store(key, data) {
+                this.storage.set(key, {
+                    data: data,
+                    timestamp: Date.now()
+                });
+            }
+
+            retrieve(key) {
+                const item = this.storage.get(key);
+                return item ? item.data : null;
+            }
+
+            saveCalculation(calculation) {
+                this.calculations.push({
+                    ...calculation,
+                    id: this.generateId(),
+                    timestamp: Date.now()
+                });
+                
+                // Keep only last 10 calculations to manage memory
+                if (this.calculations.length > 10) {
+                    this.calculations = this.calculations.slice(-10);
+                }
+            }
+
+            getCalculations() {
+                return this.calculations;
+            }
+
+            generateId() {
+                return Math.random().toString(36).substr(2, 9);
+            }
+
+            clear() {
+                this.storage.clear();
+                this.calculations = [];
+            }
+        }
+
+        const dataManager = new DataManager();
+
+        // 19. Utility Functions
+        class Utilities {
+            static formatNumber(num, decimals = 2) {
+                return Number(num).toFixed(decimals);
+            }
+
+            static formatCurrency(amount, currency = 'SGD') {
+                return new Intl.NumberFormat('en-SG', {
+                    style: 'currency',
+                    currency: currency
+                }).format(amount);
+            }
+
+            static validateEmail(email) {
+                const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return re.test(email);
+            }
+
+            static generateUUID() {
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    const r = Math.random() * 16 | 0;
+                    const v = c == 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
+            }
+
+            static sanitizeInput(input) {
+                const div = document.createElement('div');
+                div.textContent = input;
+                return div.innerHTML;
+            }
+
+            static debounce(func, delay) {
+                let timeoutId;
+                return (...args) => {
+                    clearTimeout(timeoutId);
+                    timeoutId = setTimeout(() => func.apply(null, args), delay);
+                };
+            }
+
+            static throttle(func, limit) {
+                let inThrottle;
+                return function() {
+                    const args = arguments;
+                    const context = this;
+                    if (!inThrottle) {
+                        func.apply(context, args);
+                        inThrottle = true;
+                        setTimeout(() => inThrottle = false, limit);
+                    }
+                };
+            }
+        }
+
+        // 20. Event Listeners & Initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sound toggle functionality
+            document.getElementById('soundToggle').addEventListener('click', () => {
+                soundEnabled = !soundEnabled;
+                const icon = document.querySelector('#soundToggle i');
+                icon.className = soundEnabled ? 'fas fa-volume-up' : 'fas fa-volume-mute';
+                
+                audioManager.play('click');
+                formManager.showNotification(`Sound ${soundEnabled ? 'enabled' : 'disabled'}`, 'success');
+            });
+
+            // Add CSS for touch states and improved dark mode
+            const touchStyles = document.createElement('style');
+            touchStyles.textContent = `
+                .touch-active {
+                    transform: scale(0.95) !important;
+                    opacity: 0.8 !important;
+                }
+                
+                .reduce-motion * {
+                    animation-duration: 0.01ms !important;
+                    animation-iteration-count: 1 !important;
+                    transition-duration: 0.01ms !important;
+                }
+
+                .animate-in {
+                    animation: fadeInUp 0.6s ease-out;
+                }
+
+                .dark-mode .btn {
+                    color: #ffffff !important;
+                }
+
+                .dark-mode .btn:hover {
+                    color: #ffffff !important;
+                }
+
+                .dark-mode .hero-subtitle {
+                    color: rgba(255, 255, 255, 0.9) !important;
+                }
+
+                .dark-mode input[type="number"]::-webkit-outer-spin-button,
+                .dark-mode input[type="number"]::-webkit-inner-spin-button {
+                    -webkit-appearance: none;
+                    margin: 0;
+                }
+
+                @media (max-width: 768px) {
+                    .form-row {
+                        flex-direction: column !important;
+                    }
+                    
+                    .col-6, .col-4, .col-3 {
+                        flex: 0 0 100% !important;
+                        max-width: 100% !important;
+                    }
+                }
+
+                /* Loading states */
+                .btn:disabled {
+                    opacity: 0.6;
+                    cursor: not-allowed;
+                    transform: none !important;
+                }
+
+                .loading-spinner {
+                    animation: spin 1s linear infinite;
+                }
+
+                /* Enhanced dark mode visibility */
+                .dark-mode * {
+                    scrollbar-color: #00d4ff #2d2d2d;
+                }
+
+                .dark-mode ::-webkit-scrollbar-thumb {
+                    background: #00d4ff;
+                }
+
+                .dark-mode ::-webkit-scrollbar-track {
+                    background: #2d2d2d;
+                }
+            `;
+            document.head.appendChild(touchStyles);
+
+            // Check library loading status
+            setTimeout(() => {
+                const libraries = ['jspdf', 'html2canvas'];
+                libraries.forEach(lib => {
+                    if (typeof window[lib] === 'undefined' && lib !== 'jspdf') {
+                        console.warn(`${lib} library not loaded`);
+                    }
+                    if (lib === 'jspdf' && typeof window.jspdf === 'undefined') {
+                        console.warn('jsPDF library not loaded');
+                    }
+                });
+            }, 3000);
+
+            // Initialize with welcome message
+            setTimeout(() => {
+                formManager.showNotification('Welcome to Amp-Engine Electrical Breaker Calculator!', 'success');
+            }, 1000);
+
+            console.log('Amp-Engine Electrical Breaker Calculator v2.0 - Initialized Successfully');
+            console.log('Features: Advanced calculations, PDF/PNG export, responsive design, sound effects, dark mode');
+            console.log('Standards: SS 638, IEC 60364, Singapore BCA compliance');
+        });
+
+        // Export global utilities for external use if needed
+        window.AmpEngineBreakerCalculator = {
+            audioManager,
+            themeManager,
+            calculator,
+            dataManager,
+            Utilities
+        };
+    </script>
+</body>
+</html>
